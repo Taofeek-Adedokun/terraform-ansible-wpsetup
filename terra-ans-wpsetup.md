@@ -373,7 +373,23 @@ output "instance_ip" {
 [ssh-instance](./images/ssh-into-ins.png)
 
 
+### After this i successfully versioned my code into GitHub upon completing the project.
 
+`git init`
+
+`git config --global user.email "taofeekneyoade@yahoo.com"`
+
+`git config --global user.name "Taofeek-Adedokun"`
+
+`git remote add origin git@github.com:Taofeek-Adedokun/terraform-ansible-wpsetup.git`
+
+#  I created the ssh-keygen and added the id_rsa.pub to mt github
+
+`git add .`
+
+`git commit -m ""`
+
+`git push --set-upstream origin main`
 
 - browse this to get the WP page
 
