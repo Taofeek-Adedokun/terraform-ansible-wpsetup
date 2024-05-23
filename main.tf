@@ -8,9 +8,9 @@ locals {
 
 # Provider section
 provider "aws" {
-  access_key = "ASIAQG3NLTRNAWI3CD6C"
-  secret_key = "QjfdoN+IKbXO2T5eE+L286xiE2mG+synWoUnr2g2"
-  token = "FwoGZXIvYXdzEAsaDLam1feKBi5/4juvUiK5ASwbQNFZzKg3IsD5HNAj0zhSoyQFNd/yeuANifATYIjWV+/nsTZI3wuY2rh5rIR+v796ZDe3puQrxR2GeMBQ1dlBnQ7xgta3LNyjm+5BXeX9PTE+4AVAnESsje89Gd/RKOEaALKquPlTNJ4IGitDBKZg0yLbzzG2aiqokTq6zZSA5KPrGvEqhaY8ld8JVh35JzIGuqZgPEQLWMLeqvhBmO7qIoxch3Z5s1Gd8RozUerEPATB7+7RdmsjKMyjvLIGMi11WoqjSu6eNpvMWujLDJkYMOPL/X9ljq/TBbEt0HEAKJB2zbdupmIPhlSrDKM=" 
+  access_key = ""
+  secret_key = ""
+  token = ""
   region = "us-east-1"
 }
 
