@@ -11,7 +11,7 @@ provider "aws" {
   access_key = 
   secret_key = 
   token = 
-  region = "us-east-1"
+  region = 
 }
 
 # AWS security group resource block - 2 inbound & 1 outbound rule added
