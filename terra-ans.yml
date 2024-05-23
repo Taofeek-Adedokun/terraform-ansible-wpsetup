@@ -1,0 +1,120 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    mysql_root_password: 'your_root_password'
+    mysql_wordpress_db: 'wordpress'
+    mysql_wordpress_user: 'wordpressuser'
+    mysql_wordpress_password: 'your_password'
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Check if Python is installed
+      command: python3 -V
+      register: python_check
+      ignore_errors: yes
+
+    - name: Install Python if not installed
+      apt:
+        name: python3
+        state: present
+      when: python_check.rc != 0
+
+    - name: Install MySQL client library for Python
+      apt:
+        name: python3-mysqldb
+        state: present
+
+    - name: Install Apache
+      apt:
+        name: apache2
+        state: present
+
+    - name: Install PHP and modules
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - php
+        - libapache2-mod-php
+        - php-mysql
+
+    - name: Start and enable Apache
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: Install MySQL server
+      apt:
+        name: mysql-server
+        state: present
+
+    - name: Set MySQL root password
+      mysql_user:
+        name: root
+        host: localhost
+        password: "{{ mysql_root_password }}"
+        priv: "*.*:ALL,GRANT"
+        state: present
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+
+    - name: Create MySQL database
+      mysql_db:
+        name: "{{ mysql_wordpress_db }}"
+        state: present
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+
+    - name: Create MySQL user for WordPress
+      mysql_user:
+        name: "{{ mysql_wordpress_user }}"
+        password: "{{ mysql_wordpress_password }}"
+        priv: "{{ mysql_wordpress_db }}.*:ALL"
+        state: present
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+
+    - name: Download and extract WordPress
+      shell: |
+        curl -O https://wordpress.org/latest.tar.gz
+        tar -xzf latest.tar.gz
+        mv wordpress/* /var/www/html/
+        chown -R www-data:www-data /var/www/html
+        rm -f latest.tar.gz
+      args:
+        creates: /var/www/html/wp-config.php
+
+    - name: Configure Apache for WordPress
+      copy:
+        dest: /etc/apache2/sites-available/000-default.conf
+        content: |
+          <VirtualHost *:80>
+              DocumentRoot /var/www/html
+              <Directory /var/www/html>
+                  Options Indexes FollowSymLinks MultiViews
+                  AllowOverride All
+                  Require all granted
+              </Directory>
+              ErrorLog ${APACHE_LOG_DIR}/error.log
+              CustomLog ${APACHE_LOG_DIR}/access.log combined
+          </VirtualHost>
+      notify: restart apache
+
+    - name: Enable Apache rewrite module
+      command: a2enmod rewrite
+      notify: restart apache
+
+  handlers:
+    - name: restart apache
+      service:
+        name: apache2
+        state: restarted
